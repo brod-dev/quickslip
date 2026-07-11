@@ -4,22 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Quickslip — instant invoices, no signup</title>
-<meta name="description" content="Make a clean, professional invoice in under a minute. No account, no watermark. Print it or save as PDF.">
+<meta name="description" content="Make a clean, professional invoice in under a minute. No account, no watermark. Print it, save as PDF, or email it.">
 <style>
   :root {
-    --bg: #0f1117;
-    --panel: #171a23;
-    --panel-2: #1e2230;
-    --border: #2a2f40;
-    --text: #e8eaf0;
-    --muted: #8b91a7;
-    --accent: #5b8cff;
-    --accent-hover: #729aff;
-    --danger: #ff6b6b;
+    --bg: #f4f1ea;
+    --panel: #fffdf8;
+    --panel-2: #f1ede2;
+    --border: #ddd6c6;
+    --text: #23261e;
+    --muted: #7d7a6e;
+    --accent: #0e7c5b;
+    --accent-hover: #0b9169;
+    --gold: #f4a825;
+    --danger: #c0392b;
     --paper: #ffffff;
-    --ink: #1a1d26;
-    --ink-muted: #6b7080;
-    --ink-line: #e4e6ec;
+    --ink: #1f231d;
+    --ink-muted: #6f7468;
+    --ink-line: #e6e3d8;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body { height: 100%; }
@@ -34,8 +35,6 @@
     grid-template-columns: 420px 1fr;
     min-height: 100vh;
   }
-
-  /* ---------- Form panel ---------- */
   .form-panel {
     background: var(--panel);
     border-right: 1px solid var(--border);
@@ -45,16 +44,18 @@
   }
   .brand {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 10px;
     margin-bottom: 4px;
   }
+  .brand svg { width: 30px; height: 30px; border-radius: 8px; }
   .brand h1 {
     font-size: 22px;
     font-weight: 700;
     letter-spacing: -0.3px;
+    color: var(--accent);
   }
-  .brand .dot { color: var(--accent); }
+  .brand .dot { color: var(--gold); }
   .tagline {
     color: var(--muted);
     font-size: 13px;
@@ -69,7 +70,7 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 1.2px;
-    color: var(--muted);
+    color: var(--accent);
     margin-bottom: 12px;
   }
   .row { display: flex; gap: 10px; }
@@ -93,15 +94,14 @@
     font: inherit;
     font-size: 14px;
     padding: 9px 11px;
-    transition: border-color .15s;
+    transition: border-color .15s, box-shadow .15s;
   }
   input:focus, textarea:focus, select:focus {
     outline: none;
     border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(14,124,91,.12);
   }
   textarea { resize: vertical; min-height: 60px; }
-
-  /* Line items */
   .item-row {
     display: grid;
     grid-template-columns: 1fr 64px 84px 30px;
@@ -121,7 +121,7 @@
     line-height: 1;
     transition: color .15s, background .15s;
   }
-  .remove-btn:hover { color: var(--danger); background: rgba(255,107,107,.1); }
+  .remove-btn:hover { color: var(--danger); background: rgba(192,57,43,.08); }
   .add-item {
     width: 100%;
     background: none;
@@ -144,7 +144,6 @@
     font-size: 10px;
     font-family: inherit;
   }
-
   .actions {
     position: sticky;
     bottom: 0;
@@ -167,14 +166,19 @@
   .btn:active { transform: translateY(1px); }
   .btn-primary { background: var(--accent); color: #fff; }
   .btn-primary:hover { background: var(--accent-hover); }
+  .btn-email {
+    background: var(--gold);
+    color: #3d2c00;
+  }
+  .btn-email:hover { filter: brightness(1.06); }
   .btn-ghost {
     background: var(--panel-2);
     color: var(--muted);
     border: 1px solid var(--border);
+    flex: 0 0 auto;
+    padding: 12px 16px;
   }
   .btn-ghost:hover { color: var(--text); }
-
-  /* ---------- Preview panel ---------- */
   .preview-panel {
     padding: 40px;
     display: flex;
@@ -183,7 +187,7 @@
     overflow-y: auto;
     max-height: 100vh;
     background:
-      radial-gradient(1200px 500px at 70% -10%, rgba(91,140,255,.08), transparent),
+      radial-gradient(1200px 500px at 70% -10%, rgba(14,124,91,.10), transparent),
       var(--bg);
   }
   .sheet {
@@ -193,7 +197,7 @@
     max-width: 760px;
     min-height: 940px;
     border-radius: 6px;
-    box-shadow: 0 24px 70px rgba(0,0,0,.45);
+    box-shadow: 0 18px 50px rgba(31,35,29,.18);
     padding: 56px 60px;
     display: flex;
     flex-direction: column;
@@ -208,6 +212,7 @@
     font-size: 30px;
     font-weight: 700;
     letter-spacing: -0.5px;
+    color: var(--accent);
   }
   .inv-meta { text-align: right; font-size: 13px; color: var(--ink-muted); }
   .inv-meta strong { color: var(--ink); font-weight: 600; }
@@ -222,13 +227,12 @@
     font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: var(--ink-muted);
+    color: var(--accent);
     margin-bottom: 6px;
     font-weight: 600;
   }
   .party .name { font-weight: 600; }
   .party .detail { color: var(--ink-muted); white-space: pre-line; font-size: 13px; }
-
   table.items {
     width: 100%;
     border-collapse: collapse;
@@ -243,7 +247,7 @@
     color: var(--ink-muted);
     font-weight: 600;
     padding: 0 8px 10px;
-    border-bottom: 2px solid var(--ink);
+    border-bottom: 2px solid var(--accent);
   }
   table.items td {
     padding: 12px 8px;
@@ -252,7 +256,6 @@
   }
   table.items .num { text-align: right; white-space: nowrap; }
   table.items th.num { text-align: right; }
-
   .totals {
     margin-left: auto;
     width: 280px;
@@ -269,7 +272,7 @@
     justify-content: space-between;
     padding: 12px 8px;
     margin-top: 6px;
-    border-top: 2px solid var(--ink);
+    border-top: 2px solid var(--accent);
     font-weight: 700;
     font-size: 17px;
     color: var(--ink);
@@ -287,7 +290,7 @@
     letter-spacing: 1px;
     margin-bottom: 6px;
     font-weight: 600;
-    color: var(--ink-muted);
+    color: var(--accent);
   }
   .empty-note {
     color: var(--ink-muted);
@@ -295,8 +298,6 @@
     padding: 26px 8px;
     text-align: center;
   }
-
-  /* ---------- Responsive ---------- */
   @media (max-width: 980px) {
     .app { grid-template-columns: 1fr; }
     .form-panel { max-height: none; border-right: none; border-bottom: 1px solid var(--border); }
@@ -305,9 +306,8 @@
     .parties { flex-direction: column; gap: 20px; }
     .sheet-head { flex-direction: column; gap: 14px; }
     .inv-meta { text-align: left; }
+    .actions { flex-wrap: wrap; }
   }
-
-  /* ---------- Print ---------- */
   @media print {
     body { background: #fff; }
     .form-panel { display: none; }
@@ -327,7 +327,18 @@
 <div class="app">
 
   <aside class="form-panel">
-    <div class="brand"><h1>quickslip<span class="dot">.</span></h1></div>
+    <div class="brand">
+      <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <rect x="0" y="0" width="120" height="120" rx="26" fill="#0e7c5b"/>
+        <path d="M38 24 h44 a4 4 0 0 1 4 4 v56 l-6.5 6 -6.5 -6 -6.5 6 -6.5 -6 -6.5 6 -6.5 -6 -6.5 6 -6.5 -6 V28 a4 4 0 0 1 4-4 z" fill="#fffdf8"/>
+        <rect x="44" y="36" width="24" height="5" rx="2.5" fill="#0e7c5b" opacity=".85"/>
+        <rect x="44" y="48" width="32" height="5" rx="2.5" fill="#9db8ae"/>
+        <rect x="44" y="60" width="28" height="5" rx="2.5" fill="#9db8ae"/>
+        <path d="M44 74 h18" stroke="#0e7c5b" stroke-width="5" stroke-linecap="round"/>
+        <path d="M68 76 l5 5 9 -11" stroke="#f4a825" stroke-width="6" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+      <h1>quickslip<span class="dot">.</span></h1>
+    </div>
     <p class="tagline">A clean invoice in under a minute. No account, no watermark.</p>
 
     <fieldset>
@@ -345,8 +356,11 @@
       <label class="field"><span>Client name</span>
         <input id="toName" placeholder="Northwind Trading Co.">
       </label>
+      <label class="field"><span>Client email</span>
+        <input id="toEmail" type="email" placeholder="accounts@northwind.com">
+      </label>
       <label class="field"><span>Client details</span>
-        <textarea id="toDetail" placeholder="accounts@northwind.com&#10;42 Harbor Ave, Seattle WA"></textarea>
+        <textarea id="toDetail" placeholder="42 Harbor Ave, Seattle WA"></textarea>
       </label>
     </fieldset>
 
@@ -390,15 +404,21 @@
     </fieldset>
 
     <fieldset>
-      <legend>Adjustments</legend>
+      <legend>Tax &amp; discount</legend>
       <div class="row">
-        <label class="field"><span>Tax rate (%)</span>
-          <input id="taxRate" type="number" min="0" max="100" step="0.01" placeholder="0">
+        <label class="field"><span>Sales tax — US state</span>
+          <select id="taxState">
+            <option value="custom" selected>Custom / other</option>
+          </select>
         </label>
-        <label class="field"><span>Discount (%)</span>
-          <input id="discount" type="number" min="0" max="100" step="0.01" placeholder="0">
+        <label class="field"><span>Tax rate (%)</span>
+          <input id="taxRate" type="number" min="0" max="100" step="0.001" placeholder="0">
         </label>
       </div>
+      <label class="field" style="max-width:calc(50% - 5px)"><span>Discount (%)</span>
+        <input id="discount" type="number" min="0" max="100" step="0.01" placeholder="0">
+      </label>
+      <p class="hint">State rates are statewide base sales tax. City/county taxes may apply on top — you can edit the rate freely.</p>
     </fieldset>
 
     <fieldset>
@@ -410,6 +430,7 @@
 
     <div class="actions">
       <button type="button" class="btn btn-ghost" id="resetBtn">Clear</button>
+      <button type="button" class="btn btn-email" id="emailBtn">Email invoice</button>
       <button type="button" class="btn btn-primary" id="printBtn">Print / Save PDF</button>
     </div>
   </aside>
@@ -472,6 +493,22 @@
   var state = { items: [] };
   var uid = 0;
 
+  /* Statewide base sales tax rates (%). Local city/county taxes may apply on top. */
+  var STATE_TAX = {
+    "Alabama": 4, "Alaska": 0, "Arizona": 5.6, "Arkansas": 6.5, "California": 7.25,
+    "Colorado": 2.9, "Connecticut": 6.35, "Delaware": 0, "District of Columbia": 6,
+    "Florida": 6, "Georgia": 4, "Hawaii": 4, "Idaho": 6, "Illinois": 6.25,
+    "Indiana": 7, "Iowa": 6, "Kansas": 6.5, "Kentucky": 6, "Louisiana": 5,
+    "Maine": 5.5, "Maryland": 6, "Massachusetts": 6.25, "Michigan": 6,
+    "Minnesota": 6.875, "Mississippi": 7, "Missouri": 4.225, "Montana": 0,
+    "Nebraska": 5.5, "Nevada": 6.85, "New Hampshire": 0, "New Jersey": 6.625,
+    "New Mexico": 4.875, "New York": 4, "North Carolina": 4.75, "North Dakota": 5,
+    "Ohio": 5.75, "Oklahoma": 4.5, "Oregon": 0, "Pennsylvania": 6,
+    "Rhode Island": 7, "South Carolina": 6, "South Dakota": 4.2, "Tennessee": 7,
+    "Texas": 6.25, "Utah": 6.1, "Vermont": 6, "Virginia": 5.3, "Washington": 6.5,
+    "West Virginia": 6, "Wisconsin": 5, "Wyoming": 4
+  };
+
   function todayISO(offsetDays) {
     var d = new Date();
     d.setDate(d.getDate() + (offsetDays || 0));
@@ -505,7 +542,23 @@
     });
   }
 
-  /* ----- line item rows ----- */
+  function realItems() {
+    return state.items.filter(function (i) { return i.desc || i.rate; });
+  }
+
+  function computeTotals() {
+    var real = realItems();
+    var subtotal = real.reduce(function (s, i) { return s + (i.qty || 0) * (i.rate || 0); }, 0);
+    var discPct = parseFloat($("discount").value) || 0;
+    var taxPct = parseFloat($("taxRate").value) || 0;
+    var discount = subtotal * discPct / 100;
+    var taxed = (subtotal - discount) * taxPct / 100;
+    return {
+      subtotal: subtotal, discPct: discPct, taxPct: taxPct,
+      discount: discount, taxed: taxed, total: subtotal - discount + taxed
+    };
+  }
+
   function addItem(focus) {
     var id = ++uid;
     state.items.push({ id: id, desc: "", qty: 1, rate: "" });
@@ -559,7 +612,6 @@
     return { desc: "", qty: 0, rate: 0 };
   }
 
-  /* ----- render preview ----- */
   function render() {
     $("pNumber").textContent = $("invNumber").value || "—";
     $("pIssue").textContent = fmtDate($("issueDate").value);
@@ -567,10 +619,11 @@
     $("pFromName").textContent = $("fromName").value || "Your name";
     $("pFromDetail").textContent = $("fromDetail").value;
     $("pToName").textContent = $("toName").value || "Client name";
-    $("pToDetail").textContent = $("toDetail").value;
+    var toDetail = $("toEmail").value ? $("toEmail").value + "\n" + $("toDetail").value : $("toDetail").value;
+    $("pToDetail").textContent = toDetail.trim();
 
     var body = $("pItems");
-    var real = state.items.filter(function (i) { return i.desc || i.rate; });
+    var real = realItems();
     if (real.length === 0) {
       body.innerHTML = '<tr><td colspan="4" class="empty-note">Add a line item on the left and it will appear here.</td></tr>';
     } else {
@@ -581,17 +634,11 @@
       }).join("");
     }
 
-    var subtotal = real.reduce(function (s, i) { return s + (i.qty || 0) * (i.rate || 0); }, 0);
-    var discPct = parseFloat($("discount").value) || 0;
-    var taxPct = parseFloat($("taxRate").value) || 0;
-    var discount = subtotal * discPct / 100;
-    var taxed = (subtotal - discount) * taxPct / 100;
-    var total = subtotal - discount + taxed;
-
-    var html = '<div class="line"><span>Subtotal</span><span>' + money(subtotal) + "</span></div>";
-    if (discPct > 0) html += '<div class="line"><span>Discount (' + discPct + "%)</span><span>−" + money(discount) + "</span></div>";
-    if (taxPct > 0) html += '<div class="line"><span>Tax (' + taxPct + "%)</span><span>" + money(taxed) + "</span></div>";
-    html += '<div class="grand"><span>Total due</span><span>' + money(total) + "</span></div>";
+    var t = computeTotals();
+    var html = '<div class="line"><span>Subtotal</span><span>' + money(t.subtotal) + "</span></div>";
+    if (t.discPct > 0) html += '<div class="line"><span>Discount (' + t.discPct + "%)</span><span>−" + money(t.discount) + "</span></div>";
+    if (t.taxPct > 0) html += '<div class="line"><span>Tax (' + t.taxPct + "%)</span><span>" + money(t.taxed) + "</span></div>";
+    html += '<div class="grand"><span>Total due</span><span>' + money(t.total) + "</span></div>";
     $("pTotals").innerHTML = html;
 
     var notes = $("notes").value.trim();
@@ -601,19 +648,76 @@
     document.title = ($("invNumber").value ? $("invNumber").value + " — " : "") + "Quickslip";
   }
 
-  /* ----- wiring ----- */
-  ["fromName", "fromDetail", "toName", "toDetail", "invNumber", "issueDate",
+  function buildEmail() {
+    var t = computeTotals();
+    var num = $("invNumber").value || "Invoice";
+    var from = $("fromName").value || "";
+    var lines = [];
+    lines.push("Hi" + ($("toName").value ? " " + $("toName").value : "") + ",");
+    lines.push("");
+    lines.push("Please find invoice " + num + ($("dueDate").value ? " due " + fmtDate($("dueDate").value) : "") + " below.");
+    lines.push("");
+    realItems().forEach(function (i) {
+      var qty = i.qty || 0, rate = i.rate || 0;
+      lines.push("- " + (i.desc || "Item") + " — " + qty + " × " + money(rate) + " = " + money(qty * rate));
+    });
+    lines.push("");
+    lines.push("Subtotal: " + money(t.subtotal));
+    if (t.discPct > 0) lines.push("Discount (" + t.discPct + "%): -" + money(t.discount));
+    if (t.taxPct > 0) lines.push("Tax (" + t.taxPct + "%): " + money(t.taxed));
+    lines.push("Total due: " + money(t.total));
+    var notes = $("notes").value.trim();
+    if (notes) {
+      lines.push("");
+      lines.push(notes);
+    }
+    lines.push("");
+    lines.push("Reply to this email with any questions.");
+    lines.push("");
+    lines.push("Thank you,");
+    lines.push(from);
+
+    var subject = num + (from ? " from " + from : "");
+    return "mailto:" + encodeURIComponent($("toEmail").value || "") +
+      "?subject=" + encodeURIComponent(subject) +
+      "&body=" + encodeURIComponent(lines.join("\n"));
+  }
+
+  ["fromName", "fromDetail", "toName", "toEmail", "toDetail", "invNumber", "issueDate",
    "dueDate", "currency", "taxRate", "discount", "notes"].forEach(function (id) {
     $(id).addEventListener("input", render);
   });
 
+  var sel = $("taxState");
+  Object.keys(STATE_TAX).forEach(function (name) {
+    var opt = document.createElement("option");
+    opt.value = name;
+    opt.textContent = name + " — " + STATE_TAX[name] + "%";
+    sel.appendChild(opt);
+  });
+  sel.addEventListener("change", function () {
+    if (sel.value !== "custom") {
+      $("taxRate").value = STATE_TAX[sel.value];
+    }
+    render();
+  });
+  $("taxRate").addEventListener("input", function () {
+    if (sel.value !== "custom" && parseFloat($("taxRate").value) !== STATE_TAX[sel.value]) {
+      sel.value = "custom";
+    }
+  });
+
   $("addItem").addEventListener("click", function () { addItem(true); });
   $("printBtn").addEventListener("click", function () { window.print(); });
+  $("emailBtn").addEventListener("click", function () {
+    window.location.href = buildEmail();
+  });
   $("resetBtn").addEventListener("click", function () {
     if (!confirm("Clear the whole invoice?")) return;
-    ["fromName", "fromDetail", "toName", "toDetail", "taxRate", "discount", "notes"].forEach(function (id) {
+    ["fromName", "fromDetail", "toName", "toEmail", "toDetail", "taxRate", "discount", "notes"].forEach(function (id) {
       $(id).value = "";
     });
+    $("taxState").value = "custom";
     $("invNumber").value = defaultInvoiceNumber();
     $("issueDate").value = todayISO(0);
     $("dueDate").value = todayISO(14);
@@ -622,7 +726,6 @@
     addItem(false);
   });
 
-  /* ----- init ----- */
   $("invNumber").value = defaultInvoiceNumber();
   $("issueDate").value = todayISO(0);
   $("dueDate").value = todayISO(14);
